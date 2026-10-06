@@ -1,6 +1,6 @@
 {
   "name": "localize-chess-san",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Localize chess algebraic notation piece letters (Nf3 → Pf3 in Dutch, Sf3 in German, etc.)",
   "type": "module",
   "main": "./dist/index.js",

@@ -52,7 +52,7 @@ Map a BCP-47 tag (`nl-NL`) to a supported locale (`nl`). Unknown → `en`.
 
 List of locales with piece-letter maps.
 
-## Supported locales (v0.1)
+## Supported locales (v1.0)
 
 | Locale | King | Queen | Rook | Bishop | Knight | Example |
 |--------|------|-------|------|--------|--------|---------|
