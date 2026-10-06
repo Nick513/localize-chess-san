@@ -1,0 +1,49 @@
+{
+  "name": "localize-chess-san",
+  "version": "0.1.0",
+  "description": "Localize chess algebraic notation piece letters (Nf3 → Pf3 in Dutch, Sf3 in German, etc.)",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node --experimental-strip-types --test test/**/*.test.ts",
+    "prepublishOnly": "npm test"
+  },
+  "keywords": [
+    "chess",
+    "san",
+    "notation",
+    "i18n",
+    "localization",
+    "algebraic",
+    "pgn"
+  ],
+  "author": "Nick513",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nick513/localize-chess-san.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Nick513/localize-chess-san/issues"
+  },
+  "homepage": "https://github.com/Nick513/localize-chess-san#readme",
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2"
+  }
+}
