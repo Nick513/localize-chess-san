@@ -17,6 +17,11 @@ describe('resolveChessNotationLocale', () => {
   it('falls back to English for unknown locales', () => {
     assert.equal(resolveChessNotationLocale('xx'), 'en')
   })
+
+  it('maps Norwegian tags to Bokmål letters', () => {
+    assert.equal(resolveChessNotationLocale('nn'), 'nb')
+    assert.equal(resolveChessNotationLocale('no'), 'nb')
+  })
 })
 
 describe('localizeChessSan', () => {
@@ -37,6 +42,11 @@ describe('localizeChessSan', () => {
     assert.equal(localizeChessSan('Qb8+', 'de'), 'Db8+')
   })
 
+  it('localizes Swedish knight as S (springare)', () => {
+    assert.equal(localizeChessSan('Nf3', 'sv'), 'Sf3')
+    assert.equal(localizeChessSan('Nc6', 'sv'), 'Sc6')
+  })
+
   it('localizes French / Spanish / Italian knights and kings', () => {
     assert.equal(localizeChessSan('Nf3', 'fr'), 'Cf3')
     assert.equal(localizeChessSan('Ke2', 'fr'), 'Re2')
@@ -51,10 +61,20 @@ describe('localizeChessSan', () => {
     assert.equal(localizeChessSan('O-O-O', 'fr'), 'O-O-O')
   })
 
-  it('localizes promotion suffixes', () => {
+  it('localizes promotion suffixes in common spellings', () => {
     assert.equal(localizeChessSan('e8=Q', 'nl'), 'e8=D')
     assert.equal(localizeChessSan('a1=N', 'de'), 'a1=S')
     assert.equal(localizeChessSan('e8=Q', 'fr'), 'e8=D')
+    assert.equal(localizeChessSan('e8Q', 'sv'), 'e8D')
+    assert.equal(localizeChessSan('exf8Q', 'sv'), 'exf8D')
+    assert.equal(localizeChessSan('e8/Q', 'nl'), 'e8/D')
+    assert.equal(localizeChessSan('e8(Q)', 'de'), 'e8(D)')
+  })
+
+  it('preserves annotation marks on promotions', () => {
+    assert.equal(localizeChessSan('e8=Q!', 'nl'), 'e8=D!')
+    assert.equal(localizeChessSan('e8=Q!?', 'nl'), 'e8=D!?')
+    assert.equal(localizeChessSan('e8Q+', 'sv'), 'e8D+')
   })
 
   it('supports figurine style', () => {
@@ -65,8 +85,34 @@ describe('localizeChessSan', () => {
 
 describe('delocalizeChessSan', () => {
   it('round-trips common locales', () => {
-    const samples = ['Nf3', 'Qxe5+', 'Raxd1', 'Bxc4', 'e8=Q', 'Ke2']
-    for (const locale of ['nl', 'de', 'fr', 'es', 'pl'] as const) {
+    const samples = [
+      'Nf3',
+      'Qxe5+',
+      'Raxd1',
+      'Bxc4',
+      'e8=Q',
+      'e8=Q!',
+      'e8Q',
+      'exf8Q',
+      'e8/Q',
+      'e8(Q)',
+      'Ke2',
+      'Nbd2',
+      'R1a3',
+    ]
+    for (const locale of [
+      'nl',
+      'de',
+      'fr',
+      'es',
+      'pl',
+      'sv',
+      'tr',
+      'ro',
+      'fi',
+      'hu',
+      'id',
+    ] as const) {
       for (const san of samples) {
         const localized = localizeChessSan(san, locale)
         assert.equal(
@@ -82,12 +128,18 @@ describe('delocalizeChessSan', () => {
     // Dutch does not reuse N as another piece letter, so English SAN is safe.
     assert.equal(delocalizeChessSan('Nf3', 'nl'), 'Nf3')
   })
+
+  it('documents English-letter collisions under colliding locales', () => {
+    assert.equal(delocalizeChessSan('Raxd1', 'fr'), 'Kaxd1')
+    assert.equal(delocalizeChessSan('Nf3', 'ro'), 'Bf3')
+    assert.equal(delocalizeChessSan('Ke2', 'tr'), 'Re2')
+  })
 })
 
 describe('supportedLocales', () => {
   it('includes core European locales', () => {
     const locales = supportedLocales()
-    for (const code of ['en', 'nl', 'de', 'fr', 'es', 'it', 'pt', 'pl']) {
+    for (const code of ['en', 'nl', 'de', 'fr', 'es', 'it', 'pt', 'pl', 'sv']) {
       assert.ok(locales.includes(code as never), code)
     }
   })

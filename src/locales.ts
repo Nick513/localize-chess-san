@@ -67,8 +67,8 @@ export const PIECE_LETTERS_BY_LOCALE: Record<ChessNotationLocale, PieceLetterMap
     da: { K: 'K', Q: 'D', R: 'T', B: 'L', N: 'S' },
     /** konge, dronning, tårn, løper, springer (Bokmål) */
     nb: { K: 'K', Q: 'D', R: 'T', B: 'L', N: 'S' },
-    /** kung, dam, torn, löpare, springare */
-    sv: { K: 'K', Q: 'D', R: 'T', B: 'L', N: 'H' },
+    /** kung, dam, torn, löpare, springare (S; sv.wikipedia.org/wiki/Schacknotation) */
+    sv: { K: 'K', Q: 'D', R: 'T', B: 'L', N: 'S' },
     /** kuningas, daami, torni, lähetti, ratsu */
     fi: { K: 'K', Q: 'D', R: 'T', B: 'L', N: 'R' },
     /** király, vezér, bástya, futó, huszár */

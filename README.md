@@ -66,7 +66,7 @@ List of locales with piece-letter maps.
 | `pl` | K | H | W | G | S | Sf3 |
 | `cs` / `sk` | K | D | V | S | J | Jf3 |
 | `da` / `nb` | K | D | T | L | S | Sf3 |
-| `sv` | K | D | T | L | H | Hf3 |
+| `sv` | K | D | T | L | S | Sf3 |
 | `fi` | K | D | T | L | R | Rf3 |
 | `hu` | K | V | B | F | H | Hf3 |
 | `ro` | R | D | T | N | C | Cf3 |
@@ -82,8 +82,9 @@ More locales (including multi-letter codes like Russian `Кр`) are welcome via 
 
 - **Display-layer only**: do not write localized SAN into PGN files
 - Castling accepts `O-O` and `0-0`
-- Promotion suffixes are localized (`e8=Q` → `e8=D`)
-- `delocalize` tolerates already-English input
+- Promotion suffixes are localized in PGN (`e8=Q`), slash (`e8/Q`), paren (`e8(Q)`), and bare FIDE (`e8Q`, `exf8Q`) forms
+- Trailing `+`, `#`, `!`, `?` (and combinations) are preserved through localize / delocalize
+- `delocalize` leaves already-English SAN alone only when the locale does not reuse `K`/`Q`/`R`/`B`/`N` for another piece (safe for Dutch/German/…; not for French `R` = king, Romanian `N` = bishop, etc.)
 
 ## Development
 

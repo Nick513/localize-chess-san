@@ -5,6 +5,7 @@ import {
   pieceMapForLocale,
   resolveChessNotationLocale,
 } from './locales.js'
+import { escapeRegExp, splitTrailingAnnotations } from './san-utils.js'
 
 function reverseMap(map: PieceLetterMap): Map<string, EnglishPieceLetter> {
   const reversed = new Map<string, EnglishPieceLetter>()
@@ -23,14 +24,46 @@ function reverseMap(map: PieceLetterMap): Map<string, EnglishPieceLetter> {
 }
 
 /**
+ * Rewrite localized promotion suffixes back to English:
+ * `e8=D`, `e8/D`, `e8(D)`, bare `e8D` / `exf8D`.
+ */
+function delocalizePromotionSuffix(
+  core: string,
+  reversed: Map<string, EnglishPieceLetter>,
+): string {
+  for (const [local, en] of reversed) {
+    const escaped = escapeRegExp(local)
+
+    const equalsOrSlash = new RegExp(`^(.*)([=/])${escaped}$`).exec(core)
+    if (equalsOrSlash) {
+      return `${equalsOrSlash[1] ?? ''}${equalsOrSlash[2] ?? ''}${en}`
+    }
+
+    const paren = new RegExp(`^(.*)\\(${escaped}\\)$`).exec(core)
+    if (paren) {
+      return `${paren[1] ?? ''}(${en})`
+    }
+
+    const bare = new RegExp(`^((?:[a-h]x)?[a-h][18])${escaped}$`).exec(core)
+    if (bare) {
+      return `${bare[1] ?? ''}${en}`
+    }
+  }
+
+  return core
+}
+
+/**
  * Convert localized SAN back to English SAN for chess.js / PGN.
  *
- * Expects locale-formatted input. Already-English SAN is usually left alone
- * when the locale does not reuse English piece letters for other pieces.
+ * Expects locale-formatted input. Already-English SAN is left alone only when
+ * the locale does not reuse K/Q/R/B/N for a different piece (e.g. Dutch is
+ * usually safe; French `R` is the king and will be read as such).
  *
  * @example
  * delocalizeChessSan('Pf3', 'nl') // 'Nf3'
  * delocalizeChessSan('e8=D', 'de') // 'e8=Q'
+ * delocalizeChessSan('exf8D', 'sv') // 'exf8Q'
  */
 export function delocalizeChessSan(san: string, locale: string): string {
   if (!san) return san
@@ -44,7 +77,8 @@ export function delocalizeChessSan(san: string, locale: string): string {
   if (trimmed.startsWith('O-O') || trimmed.startsWith('0-0')) return san
 
   const lead = san.slice(0, san.length - trimmed.length)
-  let body = trimmed
+  const { core, annotations } = splitTrailingAnnotations(trimmed)
+  let body = core
 
   for (const [local, en] of reversed) {
     if (body.startsWith(local)) {
@@ -53,10 +87,7 @@ export function delocalizeChessSan(san: string, locale: string): string {
     }
   }
 
-  body = body.replace(/=([^\s+#]+)/g, (full, promo: string) => {
-    const en = reversed.get(promo)
-    return en ? `=${en}` : full
-  })
+  body = delocalizePromotionSuffix(body, reversed)
 
-  return lead + body
+  return lead + body + annotations
 }
