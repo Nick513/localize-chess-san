@@ -26,7 +26,7 @@ localizeChessSan('Nf3', 'en', { figurine: true }) // '♘f3'
 
 - **Storage / interchange stays English** (PGN / FIDE / engines)
 - **UI can show local letters** your players expect
-- Same problem shows up in every serious chess app — this keeps the map in one place
+- Same problem shows up in every serious chess app; this keeps the map in one place
 
 ## Install
 
@@ -80,7 +80,7 @@ More locales (including multi-letter codes like Russian `Кр`) are welcome via 
 
 ## Design notes
 
-- **Display-layer only** — do not write localized SAN into PGN files
+- **Display-layer only**: do not write localized SAN into PGN files
 - Castling accepts `O-O` and `0-0`
 - Promotion suffixes are localized (`e8=Q` → `e8=D`)
 - `delocalize` tolerates already-English input
